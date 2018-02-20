@@ -7,7 +7,10 @@ var cmd;
 var shooter = {
     preload: function() {
         game.load.image('bullet', 'assets/misc/bullet0.png');
-        game.load.audio('disparo', 'assets/digisounds/074.wav')
+        game.load.image('backdrop', 'ShooterPhaser/backscroll.png');
+
+        game.load.audio('disparo', 'assets/digisounds/074.wav');
+
     },
 
     create: function() {
@@ -16,7 +19,7 @@ var shooter = {
 
         balas = game.add.audio('disparo');
         bullets = game.add.group();
-        init_bullets(bullets);
+        //init_bullets(bullets);
 
         var weapon = this.add.weapon(10, 'bullet');
         ///weapon.fireFrom = new Phaser.Rectangle(0, 0, 10, 10);
@@ -63,9 +66,19 @@ var shooter = {
         }
     },
 
+    update: function() {
+
+        seleccionar = game.input.keyboard.isDown(Phaser.Keyboard.S);
+        if (game.camera.target == null)
+            camaraMove();
+        else
+            naveacciones(nave);
+    },
+
     render: function() {
         //game.debug.cameraInfo(game.camera, 32, 32);
         //game.debug.pointer(game.input.activePointer);
+        /*
         enemigo.forEach(function(element) {
             game.debug.geom(element.barravida, 'rgba(255,0,0,1)');
         }, this);
@@ -82,6 +95,6 @@ var shooter = {
         //if (elegidos != null) {
         //    game.debug.geom(elegidos.barravida, 'rgba(0,0,255,0.5)');
         //}
-        game.debug.geom(puntomouse, 'rgba(0,255,0,0.25)');
+        game.debug.geom(puntomouse, 'rgba(0,255,0,0.25)');*/
     }
 }
