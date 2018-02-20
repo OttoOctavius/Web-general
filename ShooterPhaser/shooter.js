@@ -6,10 +6,10 @@ var cmd;
 
 var shooter = {
     preload: function() {
-        game.load.image('bullet', 'assets/misc/bullet0.png');
+        game.load.image('bullet', 'ShooterPhaser/assets/misc/bullet0.png');
         game.load.image('backdrop', 'ShooterPhaser/backscroll.png');
 
-        game.load.audio('disparo', 'assets/digisounds/074.wav');
+        game.load.audio('disparo', 'ShooterPhaser/assets/digisounds/074.wav');
 
     },
 
@@ -19,7 +19,7 @@ var shooter = {
 
         balas = game.add.audio('disparo');
         bullets = game.add.group();
-        //init_bullets(bullets);
+        init_bullets(bullets);
 
         var weapon = this.add.weapon(10, 'bullet');
         ///weapon.fireFrom = new Phaser.Rectangle(0, 0, 10, 10);
