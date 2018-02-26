@@ -8,14 +8,17 @@ var shooter = {
     preload: function() {
         game.load.image('bullet', 'ShooterPhaser/assets/misc/bullet0.png');
         game.load.image('backdrop', 'ShooterPhaser/backscroll.png');
-
+        game.load.image('starfield', 'ShooterPhaser/assets/misc/starfield.png');
         game.load.audio('disparo', 'ShooterPhaser/assets/digisounds/074.wav');
 
     },
 
     create: function() {
         game.world.setBounds(0, 0, 1920, 1200);
-        game.add.sprite(0, 0, 'backdrop');
+        fondo = game.add.sprite(0, 0, 'starfield');
+        game.add.sprite(fondo.width, 0, 'starfield');
+        game.add.sprite(0, fondo.height, 'starfield');
+        game.add.sprite(fondo.width, fondo.height, 'starfield');
 
         balas = game.add.audio('disparo');
         bullets = game.add.group();
