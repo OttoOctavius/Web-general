@@ -94,10 +94,10 @@ var shooter = {
             game.debug.geom(element.barravida, 'rgba(0,0,255,0.5)');
         }, this);
 
-
-        //if (elegidos != null) {
-        //    game.debug.geom(elegidos.barravida, 'rgba(0,0,255,0.5)');
-        //}
-        game.debug.geom(puntomouse, 'rgba(0,255,0,0.25)');*/
+*/
+        if (nave != null) { //elegido
+            game.debug.geom(nave.barravida, 'rgba(0,0,255,0.5)');
+        }
+        //game.debug.geom(puntomouse, 'rgba(0,255,0,0.25)');
     }
 }
