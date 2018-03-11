@@ -2,7 +2,7 @@ var boot = {
 
     preload: function() {
         game.load.image('nave', 'boss1.png');
-        game.load.spritesheet('naveanimada', 'ShooterPhaser/assets/sprites/nave32x32.png', 32, 32);
+        game.load.spritesheet('naveanimada', 'ShooterPhaser/assets/sprites/nave32x32.png', 32, 32, 15);
 
         //enemigos horizontales
         game.load.image('baddie1', 'ShooterPhaser/assets/sprites/shmup-baddie.png');
