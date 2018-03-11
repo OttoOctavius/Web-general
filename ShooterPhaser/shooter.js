@@ -27,10 +27,10 @@ var shooter = {
         var weapon = this.add.weapon(10, 'bullet');
         ///weapon.fireFrom = new Phaser.Rectangle(0, 0, 10, 10);
         weapon.autoFire = true;
-        weapon.fireRate = 600
+        weapon.fireRate = 600;
 
-        nave = new Nave(game, 100, 180, 'nave', 100);
-        nave.animations.play('normal', 15, true);
+        nave = new Nave(game, 100, 180, 'naveanimada', 100);
+        nave.animations.play('genial', 15, true);
         nave.body.allowRotation = true;
         nave.inputEnabled = nave.enableDrag = true;
 

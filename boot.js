@@ -2,6 +2,7 @@ var boot = {
 
     preload: function() {
         game.load.image('nave', 'boss1.png');
+        game.load.spritesheet('naveanimada', 'ShooterPhaser/assets/sprites/nave32x32.png', 32, 32);
 
         //enemigos horizontales
         game.load.image('baddie1', 'ShooterPhaser/assets/sprites/shmup-baddie.png');
@@ -17,6 +18,10 @@ var boot = {
     create: function() {
         button = game.add.button(game.world.centerX, game.world.centerY, 'nave', onClick);
         button.anchor.setTo(0.5);
+        button = game.add.button(game.world.centerX + 300, game.world.centerY, 'baddie1', function() {
+            game.state.start('pdisparo');
+        });
+        button.anchor.setTo(0.5);
     },
 
     update: function() {}
@@ -25,7 +30,7 @@ var boot = {
 
 function onClick() {
     game.state.start('shooter');
-};
+}
 
 function naveacciones(sprite) {
     //game.physics.arcade.angleBetween(arrow, target);
