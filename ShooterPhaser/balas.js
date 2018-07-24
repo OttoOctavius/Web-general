@@ -19,6 +19,7 @@ function resetBullet(bullet) {
     bullet.kill();
 }
 
+//TODO: refactor urgente, variables fuera de scope
 function fireBullet(nave) {
     if (game.time.now > bulletTime) {
         bullet = bullets.getFirstExists(false);

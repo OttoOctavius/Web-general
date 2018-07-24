@@ -26,8 +26,8 @@ class Nave extends Phaser.Sprite {
         this.body.collideWorldBounds = true;
         this.body.allowRotation = true;
 
-        this.animations.add('genial', [0], 10, true);
-        //this.animations.play('normal', 60, true);
+        this.animations.add('genial', [0], 10, false);
+        this.animations.add('normal', [0, 1, 2, 3], 60, true);
         //this.animations.add('danio', [4], 10, true);
         //this.animations.add('muerte', [4, 6, 4], 25, true);
         /*
@@ -35,9 +35,7 @@ class Nave extends Phaser.Sprite {
         anim.onStart.add(this.animationStarted, this);
         anim.onLoop.add(this.animationLooped, this);
         anim.onComplete.add(this.animationStopped, this);
-
-        anim.play(10, true);
-*/
+        */
         //this.createWeapon();
 
     }
