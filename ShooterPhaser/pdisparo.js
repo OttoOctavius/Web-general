@@ -17,15 +17,17 @@ var pdisparo = {
         enemigo = game.add.sprite(900, 550, 'baddie1');
         enemigo.visible = false;
         enemigo.time = game.time.now;
+        game.physics.arcade.enable(enemigo);
 
         bullets = game.add.group();
         init_bullets(bullets);
         enemigo.enableBody = true;
-        enemigo.physicsBodyType = Phaser.Physics.ARCADE;
+
+        enemigo.events.onKilled = muere;
 
         estallido = game.add.sprite(600, 550, 'estallido');
         estallido.animations.add('ciclo');
-        //estallido.animations.addKeyCapture
+        estallido.animations.add('corto', [0, 1, 2, 1, 0], 10, false);
         estallido.play('ciclo', tiempo_estallido, true);
 
         cursors = game.input.keyboard.createCursorKeys();
@@ -36,16 +38,34 @@ var pdisparo = {
         if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
             fireBullet(nave);
         }
+        if (enemigo.health == 0) {}
         if (game.input.keyboard.justPressed(Phaser.Keyboard.E) && enemigo.time + 10000 > game.time.now) {
             enemigo.visible = true;
             enemigo.health = 10;
             //enemigo.heal(1); .damage(1) .alive
         }
         if (game.input.keyboard.justPressed(Phaser.Keyboard.S)) {
-            estallido.play('ciclo', tiempo_estallido, true);
+            enemigo.damage(1);
         }
+
+        bullets.forEach(function(bala) {
+            game.physics.arcade.overlap(enemigo, bala, (balaa) => {
+                balaa.kill();
+                enemigo.damage(1);
+            }, null, this);
+
+        }, this);
+
     },
     render: function() {
         game.debug.text("Tiempo del estallido:" + tiempo_estallido.toString(), 100, 50);
     }
+
+}
+
+function muere() {
+    enemigo.loadTexture('estallido', 0);
+    enemigo.animations.add('ciclo');
+    enemigo.animations.play('ciclo', 30, false);
+
 }
