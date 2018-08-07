@@ -1,0 +1,33 @@
+<DOCTYPE html5/>
+<html>
+hola
+<canvas id="Canva" width = "800" height="600"> </canvas>
+
+<script>
+var canvas;
+var canvasContx;
+var ballX = 50;
+
+window.onload = function(){
+  canvas = document.getElementById('Canva');
+  canvasContx = canvas.getContext('2d');
+  var framesPerSecond = 30;
+  setInterval( function(){ move();},1000/framesPerSecond);
+
+}
+
+funtion move(){
+ ballX += 5;
+}
+
+funtion draw(){
+  canvasContx.fillStyle = 'black';
+  canvasContx.fillRect(0,0,canvas.width,canvas.weigth);
+  canvasContx.fillStyle = 'fire';
+  canvasContx.fillRect(ballX,100,10,50);
+}
+</script>
+
+
+
+</html>
