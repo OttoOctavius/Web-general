@@ -5,5 +5,6 @@ var button;
 game.state.add('boot', boot);
 game.state.add('shooter', shooter);
 game.state.add('pdisparo', pdisparo);
+game.state.add('grupoenemigos', grupetediabolico);
 
 game.state.start('boot');

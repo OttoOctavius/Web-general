@@ -19,7 +19,7 @@ var pdisparo = {
         enemigo.visible = false;
         enemigo.time = game.time.now;
         game.physics.arcade.enable(enemigo);
-
+        enemigo.events.onKilled.addOnce(muere, this);
         bullets = game.add.group();
         init_bullets(bullets);
         enemigobj.init();
@@ -88,4 +88,5 @@ function muere() {
     enemigo.loadTexture('estallido', 0);
     enemigo.animations.add('ciclo');
     enemigo.animations.play('ciclo', 30, false);
+    //enemigo.animations.stop(null, true);
 }
