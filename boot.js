@@ -22,6 +22,11 @@ var boot = {
             game.state.start('pdisparo');
         });
         button.anchor.setTo(0.5);
+        button = game.add.button(game.world.centerX + 400, game.world.centerY, 'baddie2', function() {
+            game.state.start('pgrupos');
+        });
+        button.anchor.setTo(0.5);
+
     },
 
     update: function() {}
