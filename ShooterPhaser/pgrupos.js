@@ -57,18 +57,19 @@ var pgrupos = {
 
         mummy.play('walk', 10, true);
 
+        game.physics.arcade.enable(mummy);
     },
 
     checkSprite: function(sprite) {
-
-        try {
-            if (sprite.x > game.width) {
-                rip++;
-                sprites.remove(sprite, true);
+        if (game.physics.arcade.collideGroupVsGroup(sprite, weapon.bullets))
+            try {
+                if (sprite.x > game.width) {
+                    rip++;
+                    sprites.remove(sprite, true);
+                }
+            } catch (e) {
+                console.log(sprite);
             }
-        } catch (e) {
-            console.log(sprite);
-        }
 
     }
 };
