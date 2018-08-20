@@ -18,9 +18,7 @@
         "test": "gulp"
     },
     "keywords": [
-        "numenta",
-        "nupic",
-        "machine learning"
+        "games"
     ],
     "devDependencies": {
         "phaser-ce": "~2.0.0",
