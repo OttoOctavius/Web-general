@@ -9,9 +9,13 @@ var pgrupos = {
 
         game.load.spritesheet('mummy', 'ShooterPhaser/assets/sprites/metalslug_mummy37x45.png', 37, 45, 18);
         game.load.image('bullet', 'ShooterPhaser/assets/misc/bullet0.png');
+        game.load.image('starfield', 'ShooterPhaser/assets/misc/starfield.png');
     },
 
     create: function() {
+
+        starfield = game.add.tileSprite(0, 0, game.width, game.height, 'starfield');
+
         nave = game.add.sprite(400, 550, 'baddie1');
         game.physics.arcade.enable(nave);
         weapon = game.add.weapon(30, 'bullet');
@@ -35,7 +39,7 @@ var pgrupos = {
 
 
     update: function() {
-
+        starfield.tilePosition.x += 2;
         sprites.setAll('x', 10, true, true, 1);
 
         sprites.forEach(this.checkSprite, this, true);

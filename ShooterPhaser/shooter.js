@@ -15,7 +15,7 @@ var shooter = {
 
     create: function() {
         game.world.setBounds(0, 0, 1920, 1200);
-        fondo = game.add.sprite(0, 0, 'starfield');
+        fondo = game.add.tileSprite(0, 0, 800, 600, 'starfield');
         game.add.sprite(fondo.width, 0, 'starfield');
         game.add.sprite(0, fondo.height, 'starfield');
         game.add.sprite(fondo.width, fondo.height, 'starfield');
