@@ -49,11 +49,27 @@
             // Setup a simple environment
             var light0 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 2, 8), scene);
             var box1 = BABYLON.Mesh.CreateBox("b1", 1.0, scene);
-            var box2 = BABYLON.Mesh.CreateBox("b2", 1.0, scene);
-            box2.position.x = -3;
+            var torus = BABYLON.Mesh.CreateTorus("torus", 3, 1, 32, scene);
+            torus.position.x = -3;
+
+            var redMat = new BABYLON.StandardMaterial("ground", scene);
+            redMat.diffuseColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            redMat.specularColor = new BABYLON.Color3(0.4, 0.4, 0.4);
+            redMat.emissiveColor = BABYLON.Color3.Red();
+
             var box3 = BABYLON.Mesh.CreateBox("b3", 1.0, scene);
             box3.position.x = 3;
+            box3.material = redMat;
+            // Initialize GizmoManager
+            var gizmoManager = new BABYLON.GizmoManager(scene)
         
+            // Initialize all gizmos
+            gizmoManager.boundingBoxGizmoEnabled=true;
+            gizmoManager.positionGizmoEnabled = true;
+            gizmoManager.rotationGizmoEnabled = true;
+            gizmoManager.scaleGizmoEnabled = true;
+            gismo(gizmoManager,scene);
+
             // ArcRotateCamera >> Camera rotating around a 3D point (here Vector zero)
             // Parameters : name, alpha, beta, radius, target, scene
             var arcCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 0.8, 10, new BABYLON.Vector3(0, 0, 0), scene);
@@ -74,7 +90,7 @@
             scene.activeCamera = freeCamera;
             freeCamera.attachControl(canvas, true);
         
-            hacermovible(box2,scene);
+            hacermovible(box1,scene);
 
             return scene;
         }
@@ -104,6 +120,133 @@
                     objeto.position.x+=0.1
                 }    
             })
+        }
+
+        function draggable(scene) {
+                var getGroundPosition = function () {
+                    // Use a predicate to get position on the ground
+                    var pickinfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh == ground; });
+                    if (pickinfo.hit) {
+                        return pickinfo.pickedPoint;
+                    }
+
+                    return null;
+                }
+
+                var onPointerDown = function (evt) {
+                    if (evt.button !== 0) {
+                        return;
+                    }
+
+                    // check if we are under a mesh
+                    var pickInfo = scene.pick(scene.pointerX, scene.pointerY, function (mesh) { return mesh !== ground; });
+                    if (pickInfo.hit) {
+                        currentMesh = pickInfo.pickedMesh;
+                        startingPoint = getGroundPosition(evt);
+
+                        if (startingPoint) { // we need to disconnect camera from canvas
+                            setTimeout(function () {
+                                camera.detachControl(canvas);
+                            }, 0);
+                        }
+                    }
+                }
+
+                var onPointerUp = function () {
+                    if (startingPoint) {
+                        camera.attachControl(canvas, true);
+                        startingPoint = null;
+                        return;
+                    }
+                }
+
+                var onPointerMove = function (evt) {
+                    if (!startingPoint) {
+                        return;
+                    }
+
+                    var current = getGroundPosition(evt);
+
+                    if (!current) {
+                        return;
+                    }
+
+                    var diff = current.subtract(startingPoint);
+                    currentMesh.position.addInPlace(diff);
+
+                    startingPoint = current;
+
+                }
+
+                canvas.addEventListener("pointerdown", onPointerDown, false);
+                canvas.addEventListener("pointerup", onPointerUp, false);
+                canvas.addEventListener("pointermove", onPointerMove, false);
+
+                scene.onDispose = function () {
+                    canvas.removeEventListener("pointerdown", onPointerDown);
+                    canvas.removeEventListener("pointerup", onPointerUp);
+                    canvas.removeEventListener("pointermove", onPointerMove);
+                }
+        }
+        function gismo(gizmoManager,scene) {
+                // Modify gizmos based on keypress
+            document.onkeydown = (e)=>{
+                if(e.key == 'w' || e.key == 'e'|| e.key == 'r'|| e.key == 'q'){
+                    // Switch gizmo type
+                    gizmoManager.positionGizmoEnabled = false;
+                    gizmoManager.rotationGizmoEnabled = false;
+                    gizmoManager.scaleGizmoEnabled = false;
+                    gizmoManager.boundingBoxGizmoEnabled = false;
+                    if(e.key == 'w'){
+                        gizmoManager.positionGizmoEnabled = true;
+                    }
+                    if(e.key == 'e'){
+                        gizmoManager.rotationGizmoEnabled = true;
+                    }
+                    if(e.key == 'r'){
+                        gizmoManager.scaleGizmoEnabled = true;
+                    }
+                    if(e.key == 'q'){
+                        gizmoManager.boundingBoxGizmoEnabled = true;
+                    }
+                }
+                if(e.key == 'y'){
+                    // hide the gizmo
+                    gizmoManager.attachToMesh(null);
+                }
+                if(e.key == 'a'){
+                    // Toggle local/global gizmo rotation positioning
+                    gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh = !gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh;
+                    gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh = !gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh;
+                }
+                if(e.key == 's'){
+                    // Toggle distance snapping
+                    if(gizmoManager.gizmos.scaleGizmo.snapDistance == 0){
+                        gizmoManager.gizmos.scaleGizmo.snapDistance = 0.3;
+                        gizmoManager.gizmos.rotationGizmo.snapDistance = 0.3;
+                        gizmoManager.gizmos.positionGizmo.snapDistance = 0.3;
+                    }else{
+                        gizmoManager.gizmos.scaleGizmo.snapDistance = 0;
+                        gizmoManager.gizmos.rotationGizmo.snapDistance = 0;
+                        gizmoManager.gizmos.positionGizmo.snapDistance = 0;
+                    }
+                }
+                if(e.key == 'd'){
+                    // Toggle gizmo size
+                    if(gizmoManager.gizmos.scaleGizmo.scaleRatio == 1){
+                        gizmoManager.gizmos.scaleGizmo.scaleRatio = 1.5;
+                        gizmoManager.gizmos.rotationGizmo.scaleRatio = 1.5;
+                        gizmoManager.gizmos.positionGizmo.scaleRatio = 1.5;
+                    }else{
+                        gizmoManager.gizmos.scaleGizmo.scaleRatio = 1;
+                        gizmoManager.gizmos.rotationGizmo.scaleRatio = 1;
+                        gizmoManager.gizmos.positionGizmo.scaleRatio = 1;
+                    }
+                }
+            }
+
+        // Start by only enabling position control
+        document.onkeydown({key: "w"})
         }
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
