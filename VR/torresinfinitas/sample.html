@@ -21,6 +21,7 @@
         <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
         <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+        <script scr="./output/Main/index.js"></script>
 
         <style>
             html, body {
@@ -42,6 +43,7 @@
     <canvas id="renderCanvas"></canvas>
     <script>
         var canvas = document.getElementById("renderCanvas");
+        //import main from './output/Main/index.js';
 
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
@@ -80,7 +82,7 @@
 
             //freeCamera the ellipsoid around the camera (e.g. your player's size)
             freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
-
+            //main();
 
             hacermovible(torus,scene);
 
