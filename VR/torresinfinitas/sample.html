@@ -45,14 +45,20 @@
 
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
-        
+                scene.collisionsEnabled = true;
+            
             // Setup a simple environment
             var light0 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 2, 8), scene);
             
-            for (let index = -10; index <= 10 ; index++) {
-                var box = BABYLON.Mesh.CreateBox("b"+index, 10, scene);
-                    box.scaling.y = 1000;
-                    box.position.x = index*50;
+            const separacion_torres = 100;
+            for (let x = -10; x <= 10 ; x++) {
+                for (let z = -10; z <= 10 ; z++) {
+                    var box = BABYLON.Mesh.CreateBox("b"+x, 10, scene);
+                        box.scaling.y = 1000;
+                        box.position.x = x*separacion_torres;
+                        box.position.z = z*separacion_torres;
+                        box.checkCollisions = true;
+                }
             }
 
             var torus = BABYLON.Mesh.CreateTorus("torus", 3, 1, 32, scene);
@@ -60,31 +66,22 @@
             BABYLON.Animation.CreateAndStartAnimation("anim", torus, "position", 30, 120,
              torus.position, torus.position.add(new BABYLON.Vector3(0, 0, 1)));
 
-            // Initialize GizmoManager
-            var gizmoManager = new BABYLON.GizmoManager(scene)
-        
-            // Initialize all gizmos
-            gizmoManager.boundingBoxGizmoEnabled=true;
-            gizmoManager.positionGizmoEnabled = true;
-            gizmoManager.rotationGizmoEnabled = true;
-            gizmoManager.scaleGizmoEnabled = true;
-            gismo(gizmoManager,scene);
-
-            // ArcRotateCamera >> Camera rotating around a 3D point (here Vector zero)
-            // Parameters : name, alpha, beta, radius, target, scene
-            var arcCamera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 0.8, 10, new BABYLON.Vector3(0, 0, 0), scene);
-            arcCamera.setPosition(new BABYLON.Vector3(0, 0, 50));
-            arcCamera.target = new BABYLON.Vector3(3, 0, 0);
-        
-            // FreeCamera >> You can move around the world with mouse and keyboard (LEFT/RIGHT/UP/DOWN)
-            // Parameters : name, position, scene
             var freeCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 0, 5), scene);
-            freeCamera.rotation = new BABYLON.Vector3(0, Math.PI, 0);
-        
-            //Attach a camera to the scene and the canvas
-            scene.activeCamera = freeCamera;
-            freeCamera.attachControl(canvas, true);
-        
+                freeCamera.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+                freeCamera.attachControl(canvas, true);
+                scene.activeCamera = freeCamera;
+                scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
+
+
+
+            //Then apply collisions and gravity to the active camera
+            freeCamera.checkCollisions = true;
+            freeCamera.applyGravity = true;
+
+            //freeCamera the ellipsoid around the camera (e.g. your player's size)
+            freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
+
+
             hacermovible(torus,scene);
 
             return scene;
@@ -183,66 +180,7 @@
                     canvas.removeEventListener("pointermove", onPointerMove);
                 }
         }
-        function gismo(gizmoManager,scene) {
-                // Modify gizmos based on keypress
-            document.onkeydown = (e)=>{
-                if(e.key == 'w' || e.key == 'e'|| e.key == 'r'|| e.key == 'q'){
-                    // Switch gizmo type
-                    gizmoManager.positionGizmoEnabled = false;
-                    gizmoManager.rotationGizmoEnabled = false;
-                    gizmoManager.scaleGizmoEnabled = false;
-                    gizmoManager.boundingBoxGizmoEnabled = false;
-                    if(e.key == 'w'){
-                        gizmoManager.positionGizmoEnabled = true;
-                    }
-                    if(e.key == 'e'){
-                        gizmoManager.rotationGizmoEnabled = true;
-                    }
-                    if(e.key == 'r'){
-                        gizmoManager.scaleGizmoEnabled = true;
-                    }
-                    if(e.key == 'q'){
-                        gizmoManager.boundingBoxGizmoEnabled = true;
-                    }
-                }
-                if(e.key == 'y'){
-                    // hide the gizmo
-                    gizmoManager.attachToMesh(null);
-                }
-                if(e.key == 'a'){
-                    // Toggle local/global gizmo rotation positioning
-                    gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh = !gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh;
-                    gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh = !gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh;
-                }
-                if(e.key == 's'){
-                    // Toggle distance snapping
-                    if(gizmoManager.gizmos.scaleGizmo.snapDistance == 0){
-                        gizmoManager.gizmos.scaleGizmo.snapDistance = 0.3;
-                        gizmoManager.gizmos.rotationGizmo.snapDistance = 0.3;
-                        gizmoManager.gizmos.positionGizmo.snapDistance = 0.3;
-                    }else{
-                        gizmoManager.gizmos.scaleGizmo.snapDistance = 0;
-                        gizmoManager.gizmos.rotationGizmo.snapDistance = 0;
-                        gizmoManager.gizmos.positionGizmo.snapDistance = 0;
-                    }
-                }
-                if(e.key == 'd'){
-                    // Toggle gizmo size
-                    if(gizmoManager.gizmos.scaleGizmo.scaleRatio == 1){
-                        gizmoManager.gizmos.scaleGizmo.scaleRatio = 1.5;
-                        gizmoManager.gizmos.rotationGizmo.scaleRatio = 1.5;
-                        gizmoManager.gizmos.positionGizmo.scaleRatio = 1.5;
-                    }else{
-                        gizmoManager.gizmos.scaleGizmo.scaleRatio = 1;
-                        gizmoManager.gizmos.rotationGizmo.scaleRatio = 1;
-                        gizmoManager.gizmos.positionGizmo.scaleRatio = 1;
-                    }
-                }
-            }
-
-        // Start by only enabling position control
-        document.onkeydown({key: "w"})
-        }
+     
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
 
