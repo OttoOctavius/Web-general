@@ -44,28 +44,32 @@
     <script>
         var canvas = document.getElementById("renderCanvas");
         //import main from './output/Main/index.js';
-
+        //42-24 -48 -33
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
                 scene.collisionsEnabled = true;
             
             // Setup a simple environment
-            var light0 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 2, 8), scene);
+            var light0 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+            //new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 2, 8), scene);
             
             var pbr = new BABYLON.PBRMetallicRoughnessMaterial("pbr", scene);
-    		    pbr.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/environment.dds", scene);
-    
+    		    //pbr.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/environment.dds", scene);
+                //Lanza error
+
             const separacion_torres = 100;
+            const box_model = BABYLON.Mesh.CreateBox("b", 10, scene);
             for (let x = -10; x <= 10 ; x++) {
                 for (let z = -10; z <= 10 ; z++) {
-		    var cubeMat = pbr.clone();
-		    cubeMat.metallic = 0.6;
-		    cubeMat.roughness = (i/gridSize)/3;
-		    cubeMat.baseColor = BABYLON.Color3.White().scale(1-(j/10))
-		    
-                    var box = BABYLON.Mesh.CreateBox("b"+x, 10, scene);
-			box.material = cubeMat;                        
-			box.scaling.y = 1000;
+                    /*
+                        var cubeMat = pbr.clone();
+                        cubeMat.metallic = 0.7;
+                        cubeMat.roughness = 0.6;
+                        cubeMat.baseColor = BABYLON.Color3.White().scale(0.5-(z/10));
+                      */  
+                        var box = box_model.createInstance("i" + (x+z+20) ); 
+                        //box.material = cubeMat;                        
+                        box.scaling.y = 1000;
                         box.position.x = x*separacion_torres;
                         box.position.z = z*separacion_torres;
                         box.checkCollisions = true;
