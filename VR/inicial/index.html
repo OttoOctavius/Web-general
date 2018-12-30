@@ -119,7 +119,7 @@
             document.onkeydown({key: "w"})
         
             // Create objects
-            var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/environment.dds", scene);
+            var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("https://github.com/BabylonJS/Babylon.js/blob/master/Playground/textures/environment.dds", scene);
             var hdrSkybox = BABYLON.Mesh.CreateBox("hdrSkyBox", 1000.0, scene);
             hdrSkybox.isPickable = false;
             var hdrSkyboxMaterial = new BABYLON.PBRMaterial("skyBox", scene);
@@ -163,10 +163,10 @@
             wood.reflectionTexture = hdrTexture;
             wood.environmentIntensity = 1;
             wood.specularIntensity = 0.3;
-            wood.reflectivityTexture = new BABYLON.Texture("textures/reflectivity.png", scene);
+            wood.reflectivityTexture = new BABYLON.Texture("https://github.com/BabylonJS/Babylon.js/tree/master/Playground/textures/reflectivity.png", scene);
             wood.useMicroSurfaceFromReflectivityMapAlpha = true;
             wood.albedoColor = BABYLON.Color3.White();
-            wood.albedoTexture = new BABYLON.Texture("textures/albedo.png", scene);
+            wood.albedoTexture = new BABYLON.Texture("https://github.com/BabylonJS/Babylon.js/tree/master/Playground/textures/albedo.png", scene);
             woodPlank.material = wood;
             return scene;
         };
