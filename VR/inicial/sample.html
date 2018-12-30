@@ -112,6 +112,7 @@
         
             hacermovible(box1,scene);
             eventos(scene,[box1,torus,box3,ground]);
+            pasilloancho();
             return scene;
         }
         
@@ -338,6 +339,57 @@
 
         // Start by only enabling position control
         document.onkeydown({key: "w"})
+        }
+
+        const tam = 15;
+
+        var pisotecho = function(i,scene){
+            var piso = BABYLON.Mesh.CreateGround("piso"+i, tam, tam, 1, scene);
+                piso.position.y = -tam/2;
+            var techo = BABYLON.Mesh.CreateGround("techo"+i,tam, tam, 1, scene);
+                techo.position.y = tam/2;
+                techo.rotation.x = Math.PI;
+            return [piso,techo];
+        }
+        var pasillo = function(i,scene){
+            var piso = BABYLON.Mesh.CreateGround("piso"+i, tam, tam, 1, scene);
+                piso.position.y = -tam/2;
+            var techo = BABYLON.Mesh.CreateGround("techo"+i,tam, tam, 1, scene);
+                techo.position.y = tam/2;
+                techo.rotation.x = Math.PI;
+            var paredi = BABYLON.Mesh.CreateGround("paredi"+i,tam, tam, 1, scene);
+                paredi.position.z = -tam/2;
+                paredi.rotation.x = Math.PI/2;
+            var paredd = BABYLON.Mesh.CreateGround("paredd"+i,tam,tam, 1, scene);
+                paredd.rotation.x = -Math.PI/2;
+                paredd.position.z = tam/2;
+            return [piso,techo,paredi,paredd];
+        }
+        var pasillo2 = function(i,scene){
+            var piso = BABYLON.Mesh.CreateGround("piso"+i, tam, tam, 1, scene);
+                piso.position.y = -tam/2;
+            var techo = BABYLON.Mesh.CreateGround("techo"+i,tam, tam, 1, scene);
+                techo.position.y = tam/2;
+                techo.rotation.x = Math.PI;
+            var paredi = BABYLON.Mesh.CreateGround("paredi"+i,tam, tam, 1, scene);
+                paredi.position.x = tam/2;
+                paredi.rotation.z = Math.PI/2;
+            var paredd = BABYLON.Mesh.CreateGround("paredd"+i,tam,tam, 1, scene);
+                paredd.position.x = -tam/2;
+                paredd.rotation.z = -Math.PI/2;
+
+            return [piso,techo,paredi,paredd];
+        }
+        function pasilloancho(scene) {
+            var pared = BABYLON.Mesh.CreateGround("pared",tam, tam, 1, scene);
+                pared.position.x = tam/2;
+                pared.rotation.z = Math.PI/2;
+            pasillo(0,scene);
+            pasillo(1,scene).map( (pl)=> pl.position.x += -tam*2)
+            pasillo(2,scene).map( (pl)=> pl.position.x += -tam*1);
+            pisotecho(4,scene).map( (pl)=> pl.position.x += -tam*3);
+            
+            pasillo2(4,scene).map( (pl)=> {pl.position.x += -tam*3;pl.position.z += -tam;});
         }
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
