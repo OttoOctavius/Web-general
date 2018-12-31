@@ -87,11 +87,9 @@
             gismo(gizmoManager,scene);*/
 
             var freeCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 0, 5), scene);
-                freeCamera.rotation = new BABYLON.Vector3(0, Math.PI, 0);
-                freeCamera.position = new BABYLON.Vector3(tam*2,tam/2,tam/2);
+                freeCamera.position = new BABYLON.Vector3(-tam*2,-tam/2,-tam);
+                freeCamera.rotation = new BABYLON.Vector3(0, 0, 0);
                 freeCamera.checkCollisions = true;
-                
-                
                 freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
  
             scene.activeCamera = freeCamera;
