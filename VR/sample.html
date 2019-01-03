@@ -21,7 +21,7 @@
         <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
         <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-
+        <script type='text/javascript' src='/torresinfinitas/pepe.js'></script>
         <style>
             html, body {
                 overflow: hidden;
@@ -46,7 +46,7 @@
         var createScene = function () {
             var scene = new BABYLON.Scene(engine);
             scene.collisionsEnabled = true;
-
+            //main();
             // Setup a simple environment
             var light0 = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 2, 8), scene);
             var box1 = BABYLON.Mesh.CreateBox("b1", 1.0, scene);
@@ -86,23 +86,103 @@
             
             //eventos(scene);
         //hacermovible(box1,scene);
-            pasilloancho(scene);
-            salon(scene);
+            var renderTarget = shader(scene);
+            
+            var lista = salon(scene);
+            //lista.forEach( e => renderTarget.renderList.push(e));
+            
+            pasilloancho(scene,renderTarget);
 
             return scene;
         }
         
+        function shader(scene) {
+            // depth material
+            BABYLON.Effect.ShadersStore["depthVertexShader"] = 
+                "#ifdef GL_ES\n" +
+                "precision highp float;\n" +
+                "#endif\n" +
+                "attribute vec3 position;\n" +
+                "uniform mat4 worldViewProjection;\n" +
+                "void main(void) {\n" +
+                "gl_Position = worldViewProjection * vec4(position, 1.0);\n" +
+                "}";
+            BABYLON.Effect.ShadersStore["depthPixelShader"] =
+                "#ifdef GL_ES\n" +
+                "precision highp float;\n" +
+                "#endif\n" +
+        
+                "void main(void) {\n" +
+                "gl_FragColor = vec4(0, 0, 0, 0.0);\n" +
+                "}\n" +
+                "";
+        
+            var depthMaterial = new BABYLON.ShaderMaterial("depth", scene, "depth",
+                {
+                    attributes: ["position"],
+                    uniforms: ["worldViewProjection"],
+        			needAlphaBlending: true
+                });
+        
+            depthMaterial.backFaceCulling = true;
+
+            // Render target
+            var renderTarget = new BABYLON.RenderTargetTexture("depth", 1024, scene);
+            scene.customRenderTargets.push(renderTarget);
+        
+            renderTarget.onBeforeRender = function () {
+                for (var index = 0; index < renderTarget.renderList.length; index++) {
+                    renderTarget.renderList[index]._savedMaterial = renderTarget.renderList[index].material;
+                    renderTarget.renderList[index].material = depthMaterial;
+                }
+            }
+        
+            renderTarget.onAfterRender = function () {
+                // Restoring previoux material
+                for (var index = 0; index < renderTarget.renderList.length; index++) {
+                    renderTarget.renderList[index].material = renderTarget.renderList[index]._savedMaterial;
+        		}
+            }
+            return renderTarget;
+        }
+
         function salon(scene) {
-            console.log("esot")
+            var light = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(50+tam*5, 50+tam*5, tam/2), scene);
+            var lista = [];
             for (let x = 0; x <= 10 ; x++) {
+                var pared = plano("Z " + x, scene);
+                    pared.position.x =  50+tam*x;
+                    pared.position.z = 50 - tam/2;
+                    pared.rotation.z = Math.PI/2;
+                    pared.rotation.y = Math.PI/2;
+                    lista.push(pared);
+                var pared = plano("Z10 " + x, scene);
+                    pared.position.x =  50+tam*x;
+                    pared.position.z = 50+tam*10+ tam/2;
+                    pared.rotation.y = Math.PI/2;
+                    pared.rotation.z = -Math.PI/2;
+                    lista.push(pared);
                 for (let z = 0; z <= 10 ; z++) {
                         var box = pisotecho(x+z ,scene); 
                         box.forEach( (pl)=> {pl.position.x = 50+tam*x;
                                              pl.position.z = 50+tam*z;} )
                         box.checkCollisions = true;
+                        lista.push(box);
                 }
+                var pared = plano("X " + x, scene);
+                    pared.position.x =  50 - tam/2;
+                    pared.position.z = 50+tam*x;
+                    pared.rotation.z = Math.PI/2;
+                    pared.rotation.y = Math.PI;
+                    lista.push(pared);
+                var pared = plano("X10 " + x, scene);
+                    pared.position.x = 50+tam*10+ tam/2;
+                    pared.position.z =  50+tam*x;
+                    pared.rotation.z = Math.PI/2;
+                    //pared.rotation.y = Math.PI;
+                    lista.push(pared);
             }
-            
+            return lista;
         }
 
         function eventos(scene,meshes){
@@ -146,7 +226,7 @@
 
         var plano = function(name,scene) {
             var pl =  BABYLON.Mesh.CreateGround(name, tam, tam, 1, scene);
-            pl.checkCollisions = true;
+                pl.checkCollisions = true;
             return pl;
         }
 
@@ -189,10 +269,17 @@
             //eventos(scene,[piso,techo,paredi,paredd]);
             return [piso,techo,paredi,paredd];
         }
-        function pasilloancho(scene) {
+        function pasilloancho(scene,renderTarget) {
+            // Render target
+            var mat = new BABYLON.StandardMaterial("plan mat", scene);
+                mat.diffuseColor = BABYLON.Color3.Black();
+                mat.specularColor = BABYLON.Color3.Black();
+                mat.emissiveTexture = renderTarget;
+                mat.opacityTexture = renderTarget;
             var pared = plano("", scene);
                 pared.position.x = tam/2;
                 pared.rotation.z = Math.PI/2;
+                pared.material = mat;
             pasillo(0,scene);
             pasillo(1,scene).map( (pl)=> pl.position.x += -tam*2)
             pasillo(2,scene).map( (pl)=> pl.position.x += -tam*1);
