@@ -80,7 +80,7 @@
                 freeCamera.rotation = new BABYLON.Vector3(0, 0, 0);
                 freeCamera.checkCollisions = true;
                 freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
- 
+                
             scene.activeCamera = freeCamera;
             freeCamera.attachControl(canvas, true);
             
@@ -89,13 +89,13 @@
             var renderTarget = shader(scene);
             
             var lista = salon(scene);
-            //lista.forEach( e => renderTarget.renderList.push(e));
+            lista.forEach( e => renderTarget.renderList.push(e));
             
-            pasilloancho(scene,renderTarget);
+            var paredG = pasilloancho(scene,renderTarget);
 
             return scene;
         }
-        
+        var paredG;
         function shader(scene) {
             // depth material
             BABYLON.Effect.ShadersStore["depthVertexShader"] = 
@@ -167,7 +167,7 @@
                         box.forEach( (pl)=> {pl.position.x = 50+tam*x;
                                              pl.position.z = 50+tam*z;} )
                         box.checkCollisions = true;
-                        lista.push(box);
+                        //lista.push(box);
                 }
                 var pared = plano("X " + x, scene);
                     pared.position.x =  50 - tam/2;
@@ -279,6 +279,9 @@
             var pared = plano("", scene);
                 pared.position.x = tam/2;
                 pared.rotation.z = Math.PI/2;
+                //pared.scaling.x = 2.0 / engine.getAspectRatio(scene.activeCamera);
+                //pared.scaling.y = 2.0 / engine.getAspectRatio(scene.activeCamera);
+        	    pared.visibility = 1.0;
                 pared.material = mat;
             pasillo(0,scene);
             pasillo(1,scene).map( (pl)=> pl.position.x += -tam*2)
@@ -293,10 +296,17 @@
                 pared.rotation.y = -Math.PI;
                 pared.rotation.x = Math.PI/2;
             pasillo2(4,scene).map( (pl)=> {pl.position.x += -tam*3;pl.position.z += -tam;});
+            return pared;
         }
         var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
         var scene = createScene();
-
+        scene.registerBeforeRender(function () {
+                    if(paredG)
+                    if (paredG.intersectsMesh(scene.activeCamera.ellipsoid)) {
+                        scene.activeCamera.position.x =  75;
+                        scene.activeCamera.position.z = 75 ;
+                    }
+                });
         engine.runRenderLoop(function () {
             if (scene) {
                 scene.render();
