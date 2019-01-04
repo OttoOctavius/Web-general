@@ -1,42 +1,32 @@
 module Main where
 
+--import Control.Monad.Eff.Console
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import DOM (DOM())
-import DOM.HTML (window)
-import DOM.HTML.Types (htmlDocumentToDocument)
-import DOM.HTML.Window (document)
-import DOM.Node.NonElementParentNode (getElementById)
-import DOM.Node.Types (Element(), Document(), ElementId(..),
-                       documentToNonElementParentNode)
-import Data.Maybe (Maybe(), fromJust)
-import Data.Nullable (toMaybe)
-import Partial.Unsafe (unsafePartial)
+import Effect (Effect)
+import Effect.Console (log)
+import Control.Monad.Eff.Random (RANDOM, randomInt)
+import Data.List (List(..), filter, head)
+import Data.Maybe (Maybe)
 
--- DOM helpers from https://github.com/sharkdp/cube-composer
-getDocument :: forall eff. Eff (dom :: DOM | eff) Document
-getDocument = window >>= document <#> htmlDocumentToDocument
+data Exit = Corredor Exit | Juntura [Exit] | Salon [Exit] | SinSalida
 
-getElementById' :: forall eff. String
-                -> Document
-                -> Eff (dom :: DOM | eff) (Maybe Element)
-getElementById' id doc = do
-  let docNode = documentToNonElementParentNode doc
-  nullableEl <- getElementById (ElementId id) docNode
-  pure $ toMaybe nullableEl
+data Direccion = N | E | S | O
+data CompDir = Dir Direccion | Arriba | Abajo
 
-foreign import setInnerHTML :: forall eff. String -> Element -> Eff (dom :: DOM | eff) Unit
+--Juntura tiene 3 o mas
+--Salon por lo menos 1
+{-Invariantes
+Rooms can connect to corridors
+Corridors can connect to rooms or junctions
+Junctions can connect to corridors
+-}
 
-unsafeFromJust :: forall a. Maybe a -> a
-unsafeFromJust = unsafePartial fromJust
+crearDungeon largo = Salon [(crearDungeon' (largo-1) )]
+    where crearDungeon' l = if l == 0 then SinSalida
+                            else case randomInt () of
+                                0 -> Corredor crearDungeon' (l-1)
+                                1 -> Juntura [crearDungeon' l, crearDungeon' l]
+                                2 -> Salon [Exit]
+                                _ -> crearDungeon' l
 
-greetingWords :: String
-greetingWords = "Hello world!"
-
-main :: forall e. Eff (dom :: DOM, console :: CONSOLE | e) Unit
-main = do
-  doc <- getDocument
-  content <- unsafeFromJust <$> getElementById' "content" doc
-  setInnerHTML ("<h1>" <> greetingWords <> "</h1>") content
-  log greetingWords
+main = log "Hello, World!"
