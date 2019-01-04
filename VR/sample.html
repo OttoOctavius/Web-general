@@ -79,7 +79,7 @@
                 freeCamera.position = new BABYLON.Vector3(-tam*2,-tam/2,-tam);
                 freeCamera.rotation = new BABYLON.Vector3(0, 0, 0);
                 freeCamera.checkCollisions = true;
-                //freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
+                freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
 
             scene.activeCamera = freeCamera;
             freeCamera.attachControl(canvas, true);
@@ -87,23 +87,40 @@
             //eventos(scene);
         //hacermovible(box1,scene);
             var renderTarget = shader(scene);
-            
-            var lista = salon(scene);
+
+            var lista = salon(scene, new BABYLON.Vector3(15,0,-15) );
             lista.forEach( e => renderTarget.renderList.push(e));
-            
+            var pared = BABYLON.Mesh.CreateGround("name", tam, tam, 1, scene);
+            var mat = new BABYLON.StandardMaterial("plan mat", scene);
+                mat.diffuseColor = BABYLON.Color3.Black();
+                mat.specularColor = BABYLON.Color3.Black();
+                mat.emissiveTexture = renderTarget;
+                mat.opacityTexture = renderTarget;
+            pared.material = mat;
+            pared.position = new BABYLON.Vector3(10,30,10);
+
             var pared = pasilloancho(scene,renderTarget);
             scene.registerBeforeRender(function () {
-                    
-                    if (pared.intersectsPoint(scene.activeCamera.position)) {
-                        console.log("hola")
-                        scene.activeCamera.position.x =  75;
-                        scene.activeCamera.position.z = 75 ;
+                //console.log("hola")
+                    if ( colision(pared,freeCamera.position)) {
+                        
+                        freeCamera.position.x =  75;
+                        freeCamera.position.z = 75 ;
                     }
             });
 
             return scene;
         }
 
+        function colision(pared,position) {
+            var x = position.x;
+            var y = position.y;
+            var z = position.z;
+            return  pared.intersectsPoint(new BABYLON.Vector3(x, y, z+2)) ||
+                    pared.intersectsPoint(new BABYLON.Vector3(x, y, z-2)) ||
+                    pared.intersectsPoint(new BABYLON.Vector3(x+2, y, z)) ||
+                    pared.intersectsPoint(new BABYLON.Vector3(x-2, y, z));
+        }
         function shader(scene) {
             // depth material
             BABYLON.Effect.ShadersStore["depthVertexShader"] = 
@@ -154,38 +171,46 @@
             return renderTarget;
         }
 
-        function salon(scene) {
+        function salon(scene,position) {
             var light = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(50+tam*5, 50+tam*5, tam/2), scene);
             var lista = [];
             for (let x = 0; x <= 10 ; x++) {
                 var pared = plano("Z " + x, scene);
-                    pared.position.x =  50+tam*x;
-                    pared.position.z = 50 - tam/2;
+                    pared.position.x =  position.x+tam*x;
+                    pared.position.z = position.z - tam/2;
+                    pared.position.y = position.y;
                     pared.rotation.z = Math.PI/2;
                     pared.rotation.y = Math.PI/2;
                     lista.push(pared);
                 var pared = plano("Z10 " + x, scene);
-                    pared.position.x =  50+tam*x;
-                    pared.position.z = 50+tam*10+ tam/2;
+                    pared.position.x =  position.x+tam*x;
+                    pared.position.z = position.z+tam*10+ tam/2;
+                    pared.position.y = position.y;
                     pared.rotation.y = Math.PI/2;
                     pared.rotation.z = -Math.PI/2;
                     lista.push(pared);
                 for (let z = 0; z <= 10 ; z++) {
                         var box = pisotecho(x+z ,scene); 
-                        box.forEach( (pl)=> {pl.position.x = 50+tam*x;
-                                             pl.position.z = 50+tam*z;} )
-                        box.checkCollisions = true;
+                        box.forEach( (pl)=> {pl.checkCollisions = true;
+                                             pl.position.x = position.x+tam*x;
+                                             pl.position.y += position.y;
+                                             pl.position.z = position.z+tam*z;
+                                             lista.push(pl);
+                                            } );
+                        
                         //lista.push(box); esta linea es la que rompe, porque no es exactamente un objeto, es una lista!!
                 }
                 var pared = plano("X " + x, scene);
-                    pared.position.x =  50 - tam/2;
-                    pared.position.z = 50+tam*x;
+                    pared.position.x =  position.x - tam/2;
+                    pared.position.z = position.z+tam*x;
+                    pared.position.y = position.y;
                     pared.rotation.z = Math.PI/2;
                     pared.rotation.y = Math.PI;
                     lista.push(pared);
                 var pared = plano("X10 " + x, scene);
-                    pared.position.x = 50+tam*10+ tam/2;
-                    pared.position.z =  50+tam*x;
+                    pared.position.x = position.x+tam*10+ tam/2;
+                    pared.position.z =  position.z+tam*x;
+                    pared.position.y = position.y;
                     pared.rotation.z = Math.PI/2;
                     lista.push(pared);
             }
@@ -288,6 +313,7 @@
                 //pared.scaling.y = 2.0 / engine.getAspectRatio(scene.activeCamera);
         	    pared.visibility = 1.0;
                 pared.material = mat;
+                pared.checkCollisions = true;
             pasillo(0,scene);
             pasillo(1,scene).map( (pl)=> pl.position.x += -tam*2)
             pasillo(2,scene).map( (pl)=> pl.position.x += -tam*1);
