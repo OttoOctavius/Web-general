@@ -90,9 +90,11 @@
                 mat.emissiveTexture = renderTarget;
                 mat.opacityTexture = renderTarget;
 
-            salon(scene, new BABYLON.Vector3(-largosalon*tam,0,-tam*(largosalon+2) ))
-                .filter( pl => pl.name == "Z5 3")
-                .material = mat;
+            var pl = salon(scene, new BABYLON.Vector3(-largosalon*tam,0,-tam*(largosalon+2) ))
+                .filter( pl => pl.id === "X5 2")
+                console.log(pl);
+                pl[0].material = mat;
+                pl[0].checkCollisions = false;
 
             var lista = salon(scene, new BABYLON.Vector3(tam+0.001,0,-tam*(largosalon+2) ));
                 lista.forEach( e => renderTarget.renderList.push(e));
