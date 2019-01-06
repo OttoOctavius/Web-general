@@ -76,7 +76,7 @@
             box3.material = greenMat;
 
             var freeCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 0, 5), scene);
-                freeCamera.position = new BABYLON.Vector3(-tam*2,-tam/2,-tam);
+                freeCamera.position = new BABYLON.Vector3(-tam*2,tam,-tam);
                 freeCamera.rotation = new BABYLON.Vector3(0, 0, 0);
                 freeCamera.checkCollisions = true;
                 freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
@@ -84,12 +84,11 @@
             scene.activeCamera = freeCamera;
             freeCamera.attachControl(canvas, true);
             
-            //eventos(scene);
-        //hacermovible(box1,scene);
             var renderTarget = shader(scene);
 
-            var lista = salon(scene, new BABYLON.Vector3(15,0,-15) );
-            lista.forEach( e => renderTarget.renderList.push(e));
+            var lista = salon(scene, new BABYLON.Vector3(-2*tam,0,-tam*2) );
+                lista.forEach( e => renderTarget.renderList.push(e));
+
             var pared = BABYLON.Mesh.CreateGround("name", tam, tam, 1, scene);
             var mat = new BABYLON.StandardMaterial("plan mat", scene);
                 mat.diffuseColor = BABYLON.Color3.Black();
@@ -98,16 +97,18 @@
                 mat.opacityTexture = renderTarget;
             pared.material = mat;
             pared.position = new BABYLON.Vector3(10,30,10);
+            pared.checkCollisions = false;
+            
 
             var pared = pasilloancho(scene,renderTarget);
+                pared.checkCollisions = false;
             scene.registerBeforeRender(function () {
-                //console.log("hola")
                     if ( colision(pared,freeCamera.position)) {
-                        
                         freeCamera.position.x =  75;
                         freeCamera.position.z = 75 ;
                     }
             });
+
 
             return scene;
         }
@@ -121,6 +122,7 @@
                     pared.intersectsPoint(new BABYLON.Vector3(x+2, y, z)) ||
                     pared.intersectsPoint(new BABYLON.Vector3(x-2, y, z));
         }
+
         function shader(scene) {
             // depth material
             BABYLON.Effect.ShadersStore["depthVertexShader"] = 
@@ -174,7 +176,7 @@
         function salon(scene,position) {
             var light = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(50+tam*5, 50+tam*5, tam/2), scene);
             var lista = [];
-            for (let x = 0; x <= 10 ; x++) {
+            for (let x = 0; x <= largosalon ; x++) {
                 var pared = plano("Z " + x, scene);
                     pared.position.x =  position.x+tam*x;
                     pared.position.z = position.z - tam/2;
@@ -184,12 +186,12 @@
                     lista.push(pared);
                 var pared = plano("Z10 " + x, scene);
                     pared.position.x =  position.x+tam*x;
-                    pared.position.z = position.z+tam*10+ tam/2;
+                    pared.position.z = position.z+tam*largosalon+ tam/2;
                     pared.position.y = position.y;
                     pared.rotation.y = Math.PI/2;
                     pared.rotation.z = -Math.PI/2;
                     lista.push(pared);
-                for (let z = 0; z <= 10 ; z++) {
+                for (let z = 0; z <= largosalon ; z++) {
                         var box = pisotecho(x+z ,scene); 
                         box.forEach( (pl)=> {pl.checkCollisions = true;
                                              pl.position.x = position.x+tam*x;
@@ -208,7 +210,7 @@
                     pared.rotation.y = Math.PI;
                     lista.push(pared);
                 var pared = plano("X10 " + x, scene);
-                    pared.position.x = position.x+tam*10+ tam/2;
+                    pared.position.x = position.x+tam*largosalon+ tam/2;
                     pared.position.z =  position.z+tam*x;
                     pared.position.y = position.y;
                     pared.rotation.z = Math.PI/2;
@@ -217,44 +219,7 @@
             return lista;
         }
 
-        function eventos(scene,meshes){
-            for (var i=0; i< meshes.length; i++) {
-                let mesh = meshes[i];
-                mesh.actionManager = new BABYLON.ActionManager(scene);
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnLongPressTrigger, (function(mesh) {
-                    console.log("%c ActionManager: long press : " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnLeftPickTrigger, (function(mesh) {
-                    temp = actual;
-                    actual = mesh.material;
-                    mesh.material = temp;
-                    console.log("%c ActionManager: left pick: " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnRightPickTrigger, (function(mesh) {
-                    console.log("%c ActionManager: right pick: " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnCenterPickTrigger, (function(mesh) {
-                    console.log("%c ActionManager: center pick: " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, (function(mesh) {
-                    console.log("%c ActionManager: pick : " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, (function(mesh) {
-                    console.log("%c ActionManager: pick down : " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, (function(mesh) {
-                    console.log("%c ActionManager: pick up : " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnDoublePickTrigger, (function(mesh) {
-                    console.log("%c ActionManager: double pick : " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-                mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickOutTrigger, (function(mesh) {
-                    console.log("%c ActionManager: pick out : " + mesh.name, 'background: green; color: white');
-                }).bind(this, mesh)));
-            }
-        }
-        
-        const tam = 15;
+        const tam = 15,largosalon =5;
 
         var plano = function(name,scene) {
             var pl =  BABYLON.Mesh.CreateGround(name, tam, tam, 1, scene);
