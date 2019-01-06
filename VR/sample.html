@@ -21,7 +21,6 @@
         <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
         <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-        <script type='text/javascript' src='./torresinfinitas/pepe.js'></script>
         <style>
             html, body {
                 overflow: hidden;
@@ -76,7 +75,7 @@
             box3.material = greenMat;
 
             var freeCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 0, 5), scene);
-                freeCamera.position = new BABYLON.Vector3(-tam*2,tam,-tam);
+                freeCamera.position = new BABYLON.Vector3(tam*2,tam,-tam);
                 freeCamera.rotation = new BABYLON.Vector3(0, 0, 0);
                 freeCamera.checkCollisions = true;
                 freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
@@ -86,22 +85,18 @@
             
             var renderTarget = shader(scene);
 
-            var lista = salon(scene, new BABYLON.Vector3(-2*tam,0,-tam*2) );
+            var lista = salon(scene, new BABYLON.Vector3(-largosalon*tam,0,-tam*(largosalon+2) ));
                 lista.forEach( e => renderTarget.renderList.push(e));
 
-            var pared = BABYLON.Mesh.CreateGround("name", tam, tam, 1, scene);
             var mat = new BABYLON.StandardMaterial("plan mat", scene);
                 mat.diffuseColor = BABYLON.Color3.Black();
                 mat.specularColor = BABYLON.Color3.Black();
                 mat.emissiveTexture = renderTarget;
                 mat.opacityTexture = renderTarget;
-            pared.material = mat;
-            pared.position = new BABYLON.Vector3(10,30,10);
-            pared.checkCollisions = false;
-            
 
-            var pared = pasilloancho(scene,renderTarget);
-                pared.checkCollisions = false;
+            var pared = pasilloancho(scene);
+                //pared.material = mat;
+
             scene.registerBeforeRender(function () {
                     if ( colision(pared,freeCamera.position)) {
                         freeCamera.position.x =  75;
@@ -264,21 +259,17 @@
 
             return [piso,techo,paredi,paredd];
         }
-        function pasilloancho(scene,renderTarget) {
+        function pasilloancho(scene) {
             // Render target
-            var mat = new BABYLON.StandardMaterial("plan mat", scene);
-                mat.diffuseColor = BABYLON.Color3.Black();
-                mat.specularColor = BABYLON.Color3.Black();
-                mat.emissiveTexture = renderTarget;
-                mat.opacityTexture = renderTarget;
+            var blanco = new BABYLON.StandardMaterial("plan mat", scene);
+                blanco.diffuseColor = BABYLON.Color3.White();
             var pared = plano("", scene);
                 pared.position.x = tam/2;
                 pared.rotation.z = Math.PI/2;
                 //pared.scaling.x = 2.0 / engine.getAspectRatio(scene.activeCamera);
                 //pared.scaling.y = 2.0 / engine.getAspectRatio(scene.activeCamera);
         	    pared.visibility = 1.0;
-                pared.material = mat;
-                pared.checkCollisions = true;
+                pared.material = blanco;
             pasillo(0,scene);
             pasillo(1,scene).map( (pl)=> pl.position.x += -tam*2)
             pasillo(2,scene).map( (pl)=> pl.position.x += -tam*1);
@@ -286,11 +277,13 @@
             var pared = plano("", scene);
                 pared.position.x = -tam*4 + tam/2
                 pared.rotation.z = -Math.PI/2;
+                pared.material = blanco;
             var pared = plano("", scene);
                 pared.position.x = -tam*3;
                 pared.position.z = tam/2;
                 pared.rotation.y = -Math.PI;
                 pared.rotation.x = Math.PI/2;
+                pared.material = blanco;
             pasillo2(4,scene).map( (pl)=> {pl.position.x += -tam*3;pl.position.z += -tam;});
             return pared;
         }
@@ -299,6 +292,7 @@
 
         engine.runRenderLoop(function () {
             if (scene) {
+                scene.activeCamera.position.y = 0;
                 scene.render();
             }
         });
