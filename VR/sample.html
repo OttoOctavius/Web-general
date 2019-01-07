@@ -173,7 +173,7 @@
         }
 
         function salon(scene,position) {
-            var light = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(position.x+tam*5, position.y+tam*5,position.z + tam/2), scene);
+            var light = new BABYLON.PointLight("Omni0", new BABYLON.Vector3(position.x+tam/2, position.y,position.z + tam/2), scene);
             var lista = [];
             for (let x = 0; x <= largosalon ; x++) {
                 var pared = plano("Z " + x, scene);
