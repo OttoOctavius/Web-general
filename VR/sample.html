@@ -75,7 +75,7 @@
             box3.material = greenMat;
 
             var freeCamera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 0, 5), scene);
-                freeCamera.position = new BABYLON.Vector3(tam*2,tam,-tam);
+                freeCamera.position = new BABYLON.Vector3(-tam,0,0);
                 freeCamera.rotation = new BABYLON.Vector3(0, 0, 0);
                 freeCamera.checkCollisions = true;
                 freeCamera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
@@ -101,6 +101,9 @@
                 pl[0].material = mat;
                 pl[0].checkCollisions = false;
 
+            var cubo = BABYLON.Mesh.CreateBox("limite",tam*2,scene);
+                cubo.position = new BABYLON.Vector3(0,0,-tam*(largosalon+2) );
+                cubo.scaling.z = 2;
             pasilloinfinito(scene);
             var pared = pasilloancho(scene);
 
