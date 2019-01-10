@@ -300,17 +300,24 @@
 
         function pasilloinfinito(scene) {
             const longitud = 20,offset = 0.001;
+            const primero = pisotecho(50,scene),
+                  segundo = pisotecho(51,scene);
+            const pared_izquirda = plano("paredi"),
+                  pared_derecha = plano("paredd");
+            
             for (let index = -longitud; index < longitud; index++) {
-                pisotecho(50+index,scene).forEach( (pl)=> {pl.position.x = tam*7+offset*2; pl.position.z = index*tam;});
-                pisotecho(50+index,scene).forEach( (pl)=> {pl.position.x = tam*8+offset*2; pl.position.z = index*tam;});
-                var paredi = plano("paredi"+50+index);
+                primero.forEach( (pl)=> {pl = pl.createInstance(50+index); pl.position.x = tam*7+offset*2; pl.position.z = index*tam;});
+                segundo.forEach( (pl)=> {pl = pl.createInstance(50+index); pl.position.x = tam*8+offset*2; pl.position.z = index*tam;});
+                let paredi = pared_izquirda.createInstance("paredi"+50+index);
                     paredi.position.x = tam*7+offset*2-tam/2;
                     paredi.position.z = index*tam;
                     paredi.rotation.z = -Math.PI/2;
-                var paredd = plano("paredd"+50+index);
+                    paredi.checkCollisions = true;
+                let paredd = pared_derecha.createInstance("paredd"+50+index);
                     paredd.position.x = tam*8+offset*2+tam/2;
                     paredd.position.z = index*tam;
                     paredd.rotation.z = Math.PI/2;
+                    paredd.checkCollisions = true;
             }
             
         }
